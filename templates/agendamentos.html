@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agendamento de Consultas - Hospital Vida</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(to bottom, #e0f7fa, #ffffff);
+      color: #004d40;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    header {
+      width: 100%;
+      padding: 10px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: rgba(255, 255, 255);
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.3);
+      z-index: 100;
+      transition: background 0.5s;
+    }
+
+    header.scrolled {
+      background: rgba(0, 151, 167, 0.9);
+    }
+
+    .logo {
+      height: 70px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .logo:hover {
+      transform: scale(1.1);
+    }
+
+    nav {
+      display: flex;
+      gap: 40px;
+    }
+
+    nav a {
+      color: #007c91;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 16px;
+      position: relative;
+      transition: color 0.3s;
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: #00e5ff;
+      transition: width 0.3s;
+    }
+
+    nav a:hover::after {
+      width: 100%;
+    }
+
+    nav a:hover {
+      color: #b2ebf2;
+    }
+
+    .perfil {
+      height: 55px;
+      border-radius: 50%;
+      border: 2px solid white;
+      cursor: pointer;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .perfil:hover {
+      transform: scale(1.1);
+      border-color: #00e5ff;
+    }
+
+    .banner {
+      width: 100%;
+      height: 320px;
+      background: linear-gradient(rgba(0, 188, 212, 0.6), rgba(0, 151, 167, 0.8)),
+        url("https://img.freepik.com/fotos-gratis/conceito-de-programacao-de-agenda-do-planejador-de-calendario_53876-133697.jpg?semt=ais_hybrid&w=740&q=80") center/cover no-repeat;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 90px;
+      color: white;
+      text-align: center;
+    }
+
+    .banner h1 {
+      font-size: 36px;
+      font-weight: 600;
+      text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    main {
+      margin-top: -60px;
+      background: white;
+      padding: 40px 50px;
+      border-radius: 16px;
+      box-shadow: 0px 4px 15px rgba(0, 188, 212, 0.3);
+      width: 400px;
+      text-align: center;
+      z-index: 2;
+    }
+
+    main h2 { color: #007c91; margin-bottom: 20px; }
+
+    form { display: flex; flex-direction: column; align-items: center; }
+
+    input, select {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #b2ebf2;
+      border-radius: 6px;
+      background: #e0f7fa;
+      color: #004d40;
+      font-size: 14px;
+      transition: 0.3s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #00bcd4;
+      background: #ffffff;
+    }
+
+    button {
+      width: 95%;
+      padding: 12px;
+      margin-top: 15px;
+      background: linear-gradient(to right, #00bcd4, #0097a7);
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #26c6da, #00acc1);
+    }
+
+    footer {
+      margin-top: 60px;
+      padding: 15px;
+      background: #0097a7;
+      color: white;
+      width: 100%;
+      text-align: center;
+      font-size: 14px;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.2);
+    }
+
+  </style>
+</head>
+<body>
+  <header id="header">
+    <a href="/home"><img src="https://www.shareicon.net/download/2016/10/29/848387_medical_512x512.png" alt="Logo do Hospital" class="logo"></a>
+
+    <nav>
+      <a href="/home">Início</a>
+      <a href="/agendamentos">Agendar</a>
+      <a href="/sobre">Sobre Nós</a>
+      <a href="/contato">Contato</a>
+    </nav>
+
+    <a href="/perfil"><img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Perfil" class="perfil"></a>
+  </header>
+
+
+  <div class="banner">
+    <h1>Agendamento de Consultas e Exames</h1>
+  </div>
+
+  <main>
+    <h2>Agende sua Consulta</h2>
+    <form id="formAgendamento">
+      <input type="text" id="nome" placeholder="Nome completo" required>
+      <input type="text" id="cpf" placeholder="CPF (somente números)" required maxlength="11" readonly>
+
+      <select id="especialidade" required>
+        <option value="" disabled selected>Carregando especialidades...</option>
+      </select>
+
+      <input type="date" id="data" required>
+
+      <select id="hora" required>
+        <option value="" disabled selected>Selecione o horário</option>
+      </select>
+
+      <select id="local" required>
+        <option value="" disabled selected>Selecione o local</option>
+        <option value="Online">Online</option>
+        <option value="Físico">Físico</option>
+      </select>
+
+      <button type="submit">Confirmar Agendamento</button>
+    </form>
+
+  </main>
+
+  <footer>
+    © 2025 Casa de Saúde São Gustavo — Todos os direitos reservados.
+  </footer>
+
+  <script>
+  // Pegar informações inicias que serão usadas mais para frente
+  const cliente = JSON.parse(localStorage.getItem("cliente"));
+  const cpfInput = document.getElementById("cpf");
+
+// Certificar que o usuário está logado em uma conta
+  if (!cliente) {
+    alert("Você precisa estar logado para agendar uma consulta.");
+    window.location.href = "/login";
+  } else {
+    cpfInput.value = cliente.CPF; // Preenche CPF automaticamente
+    cpfInput.readOnly = true; // Não permite editar
+  }
+
+  // Não permitir datas no passado ou além de 18 meses de hoje
+  const dataInput = document.getElementById("data");
+  const hoje = new Date();
+  const dezoitoMeses = new Date();
+  dezoitoMeses.setMonth(dezoitoMeses.getMonth() + 18);
+
+  dataInput.min = hoje.toISOString().split("T")[0];
+  dataInput.max = dezoitoMeses.toISOString().split("T")[0];
+
+  // ============= CARREGAR ESPECIALIDADES =============
+  async function carregarEspecialidades() {
+    try {
+      const resp = await fetch("/api/especialistas");
+      const data = await resp.json();
+      const select = document.getElementById("especialidade");
+      select.innerHTML = '<option value="" disabled selected>Selecione a especialidade</option>';
+
+      const especialidades = [...new Set(data.map(e => e.area))];
+      especialidades.forEach(area => {
+        const opt = document.createElement("option");
+        opt.value = area;
+        opt.textContent = area;
+        select.appendChild(opt);
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao carregar especialidades.");
+    }
+  }
+
+  // ============= MOSTRAR OPÇÕES FIXAS DE HORÁRIO =============
+  const horaInput = document.getElementById("hora");
+  document.getElementById("especialidade").addEventListener("change", () => {
+    const horarios = ["13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00"];
+    horaInput.innerHTML = "";
+    horarios.forEach(h => {
+      const opt = document.createElement("option");
+      opt.value = h;
+      opt.textContent = h;
+      horaInput.appendChild(opt);
+    });
+  });
+
+  // ============= ENVIAR AGENDAMENTO =============
+  document.getElementById("formAgendamento").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const nome = document.getElementById("nome").value.trim();
+    const especialidade = document.getElementById("especialidade").value;
+    const data = dataInput.value;
+    const hora = horaInput.value;
+    const local = document.getElementById("local").value;
+
+    if (!nome || !especialidade || !data || !hora || !local) {
+      alert("Por favor, preencha todos os campos.");
+      return;
+    }
+
+    // Combinar data e hora
+    const dataHora = `${data} ${hora}:00`;
+
+    try {
+      const espResp = await fetch("/api/especialistas");
+      const especialistas = await espResp.json();
+      const especialista = especialistas.find(e => e.area === especialidade);
+
+      if (!especialista) {
+        alert("Não há especialistas disponíveis nessa área.");
+        return;
+      }
+
+      const response = await fetch("/api/agendamentos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cliente_id: cliente.id,
+          especialista_id: especialista.id,
+          data: dataHora,
+          local: local
+        })
+      });
+
+      const resultado = await response.json();
+      if (resultado.erro) {
+        alert(resultado.erro);
+      } else {
+        alert("✅ Agendamento realizado com sucesso!");
+        window.location.href = "/home";
+      }
+
+    } catch (error) {
+      console.error("Erro:", error);
+      alert("Erro ao tentar agendar. Tente novamente mais tarde.");
+    }
+  });
+
+  carregarEspecialidades();
+  </script>
+</body>
+</html>

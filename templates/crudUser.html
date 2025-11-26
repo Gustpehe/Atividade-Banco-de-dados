@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clientes CRUD</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Arial", sans-serif;
+      background:
+        linear-gradient(rgba(0, 188, 212, 0.3), rgba(0, 151, 167, 0.3)),
+        url("https://images.unsplash.com/photo-1512678080530-7760d81faba6?ixlib=rb-4.1.0&q=80&w=3000");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: rgba(41, 244, 255, 0.55);
+      backdrop-filter: blur(8px);
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      z-index: 10;
+    }
+
+    header img.logo { height: 60px; cursor: pointer; }
+    nav { display: flex; gap: 30px; }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    nav a:hover { color: #e0f7fa; transform: scale(1.1); }
+
+    main {
+      margin-top: 130px;
+      width: 90%;
+      max-width: 900px;
+      text-align: center;
+    }
+
+    form {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 20px;
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    input, select {
+      width: 90%;
+      padding: 10px;
+      margin: 4px 0;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+
+    input[readonly] {
+      background-color: rgba(255,255,255,0.25);
+      color: #eee;
+      cursor: not-allowed;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      width: 90%;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 25px;
+      background: linear-gradient(to right, #00bcd4, #1fb1c1);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover { background: linear-gradient(to right, #26c6da, #00acc1); }
+
+    .cancel-btn {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    .create-btn {
+      background: #00796b;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 25px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th { text-transform: uppercase; font-size: 12px; letter-spacing: .6px; }
+
+    .actions button {
+      border: 2px solid #00acc1;
+      background: none;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 6px;
+      margin: 2px;
+      cursor: pointer;
+    }
+
+    .actions button:hover { background: #00acc1; color: #002; }
+  </style>
+</head>
+
+<body>
+  <header>
+    <img src="" alt="Logo" class="logo">
+    <nav>
+      <a href="/">Início</a>
+      <a href="/agendamentos">Agendar</a>
+      <a href="#">X</a>
+      <a href="#">X</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Gerenciamento de Clientes</h1>
+
+    <button id="newBtn" class="create-btn">Criar novo cliente</button>
+
+    <form id="clienteForm" autocomplete="off">
+      <input type="text" id="id" placeholder="ID" readonly />
+      <input type="text" id="nome" placeholder="Nome completo" maxlength="100" required />
+      <input type="text" id="CPF" placeholder="CPF" maxlength="11" required />
+      <input type="number" id="idade" placeholder="Idade" required />
+
+      <!-- CAMPO CLASSE ATUALIZADO -->
+      <select id="classe" required>
+        <option value="cliente">Cliente</option>
+        <option value="admin">Admin</option>
+        <option value="especialista">Especialista</option>
+      </select>
+
+      <input type="password" id="senha" placeholder="Senha" maxlength="64" required />
+
+      <div class="form-actions">
+        <button id="saveBtn" type="submit">Salvar</button>
+        <button id="cancelBtn" type="button" class="cancel-btn">Cancelar</button>
+      </div>
+    </form>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>CPF</th>
+          <th>Idade</th>
+          <th>Classe</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tabela"></tbody>
+    </table>
+  </main>
+
+  <script>
+    const cliente = JSON.parse(localStorage.getItem("cliente"));
+    if (!cliente) {   // verifica se a pessoa não está logada
+      alert('Você precisa estar logado para acessar essa página');
+      window.location.href = "/login";
+    }
+    else if (cliente.classe !== "admin") { // verifica a classe do usuário
+      alert('Você não deveria saber da existência dessa página...');
+      window.location.href = "/home"; // manda o usuário para a home
+    }
+
+
+    // Puxando os dados necessários e colocando eles em variáveis
+    const apiURL = "/api/clientes";
+
+    const tabela = document.getElementById("tabela");
+    const form = document.getElementById("clienteForm");
+
+    const inputId = document.getElementById("id");
+    const inputNome = document.getElementById("nome");
+    const inputCPF = document.getElementById("CPF");
+    const inputIdade = document.getElementById("idade");
+    const inputClasse = document.getElementById("classe");
+    const inputSenha = document.getElementById("senha");
+
+    const newBtn = document.getElementById("newBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const saveBtn = document.getElementById("saveBtn");
+
+
+    // função para buscar os clientes no banco e colocar as informações e os botões de editar e excluir
+    async function carregarClientes() {
+      const res = await fetch(apiURL);
+      const data = await res.json();
+
+      tabela.innerHTML = "";
+
+      data.forEach(c => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td>${c.id}</td>
+          <td>${c.nome}</td>
+          <td>${c.CPF}</td>
+          <td>${c.idade}</td>
+          <td>${c.classe}</td>
+          <td class="actions"></td>
+        `;
+
+        const tdActions = tr.querySelector(".actions");
+
+        const btnEdit = document.createElement("button");
+        btnEdit.textContent = "Editar";
+        btnEdit.addEventListener("click", () => iniciarEdicao(c));
+        tdActions.appendChild(btnEdit);
+
+        const btnDel = document.createElement("button");
+        btnDel.textContent = "Excluir";
+        btnDel.addEventListener("click", () => deletarCliente(c.id));
+        tdActions.appendChild(btnDel);
+
+        tabela.appendChild(tr);
+      });
+    }
+
+    function iniciarEdicao(c) {
+      inputId.value = c.id;
+      inputNome.value = c.nome;
+      inputCPF.value = c.CPF;
+      inputIdade.value = c.idade;
+      inputClasse.value = c.classe;
+      inputSenha.value = c.senha;
+      saveBtn.textContent = "Salvar Alterações";
+    }
+
+    function cancelarEdicao() {
+      form.reset();
+      inputId.value = "";
+      saveBtn.textContent = "Salvar";
+    }
+
+
+    // parar de editar caso o botão de cancelar for clicado
+    cancelBtn.addEventListener("click", cancelarEdicao);
+
+    newBtn.addEventListener("click", async () => {
+      const cliente = {
+        nome: inputNome.value.trim(),
+        CPF: inputCPF.value.trim(),
+        idade: Number(inputIdade.value),
+        classe: inputClasse.value,
+        senha: inputSenha.value,
+        classe: inputClasse.value.trim()
+      };
+
+      // variável para criar novo cliente no banco de dados
+      const res = await fetch(apiURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cliente)
+      });
+
+      // mensagem muito legal para saber que funciona
+      alert("Cliente criado!");
+      cancelarEdicao();
+      carregarClientes();
+    });
+
+
+    // criar o cliente logo de uma vez quando clicar no botão
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const id = inputId.value;
+      if (!id) return alert("Selecione um cliente para editar.");
+
+      const cliente = {
+        nome: inputNome.value.trim(),
+        CPF: inputCPF.value.trim(),
+        idade: Number(inputIdade.value),
+        classe: inputClasse.value,
+        senha: inputSenha.value,
+        classe: inputClasse.value.trim()
+      };
+
+      await fetch(`${apiURL}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cliente)
+      });
+
+      alert("Cliente atualizado!");
+      cancelarEdicao();
+      carregarClientes();
+    });
+
+
+    // deletar o cliente da hisstória
+    async function deletarCliente(id) {
+      if (!confirm("Deseja excluir este cliente?")) return;
+
+      await fetch(`${apiURL}/${id}`, { method: "DELETE" });
+      carregarClientes();
+    }
+
+
+    // carregar os clientes para mostrar os dados
+    carregarClientes();
+  </script>
+
+</body>
+</html>

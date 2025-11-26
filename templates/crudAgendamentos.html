@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agendamentos CRUD</title>
+  <style>
+    /* Copie o mesmo estilo do CRUD de Especialistas */
+    body { margin:0; font-family:"Arial", sans-serif; color:white; background: linear-gradient(rgba(0,188,212,0.3), rgba(0,151,167,0.3)), url("https://images.unsplash.com/photo-1512678080530-7760d81faba6?ixlib=rb-4.1.0&q=80&w=3000");; min-height:100vh; display:flex; flex-direction:column; align-items:center; }
+    header{width:100%; padding:15px 40px; display:flex; justify-content:space-evenly; align-items:center; position:fixed; top:0; background:rgba(41,244,255,0.55); backdrop-filter:blur(8px); box-shadow:0 4px 10px rgba(0,0,0,0.2);}
+    nav a{color:white; text-decoration:none; margin:0 10px;}
+    main{margin-top:130px; width:90%; max-width:900px; text-align:center;}
+    form{background:rgba(255,255,255,0.15); border-radius:12px; padding:20px; display:flex; flex-direction:column; gap:8px;}
+    input, select{width:90%; padding:10px; border-radius:8px; border:none; font-size:16px;}
+    table{width:100%; border-collapse:collapse; margin-top:25px; background:rgba(255,255,255,0.1);}
+    th, td{padding:10px; border-bottom:1px solid rgba(255,255,255,0.2); text-align:left;}
+    .actions button{border:2px solid #00acc1; background:none; color:white; padding:5px 10px; border-radius:6px; margin:2px; cursor:pointer;}
+    .actions button:hover{background:#00acc1; color:#002;}
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/">Início</a>
+      <a href="/crudAgendamentos">Agendamentos</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Gerenciamento de Agendamentos</h1>
+
+    <button id="newBtn">Criar novo agendamento</button>
+
+    <form id="agendamentoForm">
+      <input type="text" id="id" placeholder="ID" readonly />
+      <select id="cliente_id" required></select>
+      <select id="especialista_id" required></select>
+      <input type="datetime-local" id="data" required />
+      <input type="text" id="local" placeholder="Local" required />
+      <div class="form-actions">
+        <button type="submit" id="saveBtn">Salvar</button>
+        <button type="button" id="cancelBtn">Cancelar</button>
+      </div>
+    </form>
+
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Cliente</th><th>Especialista</th><th>Data</th><th>Local</th><th>Ações</th></tr>
+      </thead>
+      <tbody id="tabela"></tbody>
+    </table>
+  </main>
+
+  <script>
+    const apiURL = "/api/agendamentos";
+    const tabela = document.getElementById("tabela");
+    const form = document.getElementById("agendamentoForm");
+    const inputId = document.getElementById("id");
+    const clienteSelect = document.getElementById("cliente_id");
+    const especialistaSelect = document.getElementById("especialista_id");
+    const inputData = document.getElementById("data");
+    const inputLocal = document.getElementById("local");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const saveBtn = document.getElementById("saveBtn");
+    const newBtn = document.getElementById("newBtn");
+
+
+    const cliente = JSON.parse(localStorage.getItem("cliente"));
+    if (!cliente) {   // verifica se a pessoa não está logada
+      alert('Você precisa estar logado para acessar essa página');
+      window.location.href = "/login";
+    }
+    else if (cliente.classe !== "admin") { // verifica a classe do usuário
+      alert('Você não deveria saber da existência dessa página...');
+      window.location.href = "/home"; // manda o usuário para a home
+    }
+
+
+    async function carregarSelects() {
+      // Carrega clientes
+      const clientes = await (await fetch("/api/clientes")).json();
+      clienteSelect.innerHTML = clientes.map(c => `<option value="${c.id}">${c.nome}</option>`).join("");
+
+      // Carrega especialistas
+      const especialistas = await (await fetch("/api/especialistas")).json();
+      especialistaSelect.innerHTML = especialistas.map(e => `<option value="${e.id}">${e.nome}</option>`).join("");
+    }
+
+
+    async function carregarAgendamentos() {
+      const res = await fetch(apiURL);
+      const data = await res.json();
+      tabela.innerHTML = "";
+      data.forEach(a => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${a.id}</td>
+          <td>${a.cliente_nome}</td>
+          <td>${a.especialista_nome}</td>
+          <td>${new Date(a.data).toLocaleString()}</td>
+          <td>${a.local}</td>
+          <td class="actions"></td>
+        `;
+        const tdActions = tr.querySelector(".actions");
+
+        const btnEdit = document.createElement("button");
+        btnEdit.textContent = "Editar";
+        btnEdit.addEventListener("click", () => iniciarEdicao(a));
+        tdActions.appendChild(btnEdit);
+
+        const btnDel = document.createElement("button");
+        btnDel.textContent = "Excluir";
+        btnDel.addEventListener("click", () => deletarAgendamento(a.id));
+        tdActions.appendChild(btnDel);
+
+        tabela.appendChild(tr);
+      });
+    }
+
+
+    function iniciarEdicao(a) {
+      inputId.value = a.id;
+      clienteSelect.value = a.cliente_id;
+      especialistaSelect.value = a.especialista_id;
+      inputData.value = a.data.slice(0,16);
+      inputLocal.value = a.local;
+      saveBtn.textContent = "Salvar Alterações";
+    }
+
+
+    function cancelarEdicao() {
+      form.reset();
+      inputId.value = "";
+      saveBtn.textContent = "Salvar";
+    }
+
+
+    cancelBtn.addEventListener("click", cancelarEdicao);
+
+
+    newBtn.addEventListener("click", async () => {
+      const agendamento = {
+        cliente_id: clienteSelect.value,
+        especialista_id: especialistaSelect.value,
+        data: inputData.value,
+        local: inputLocal.value
+      };
+      try {
+        const res = await fetch(apiURL, {
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify(agendamento)
+        });
+        if(!res.ok) throw new Error(await res.text());
+        alert("Agendamento criado!");
+        cancelarEdicao();
+        carregarAgendamentos();
+      } catch(e){alert("Erro ao criar: "+e);}
+    });
+
+
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      const id = inputId.value;
+      if(!id) { alert("Nenhum agendamento selecionado."); return; }
+      const agendamento = {
+        cliente_id: clienteSelect.value,
+        especialista_id: especialistaSelect.value,
+        data: inputData.value,
+        local: inputLocal.value
+      };
+      try {
+        const res = await fetch(`${apiURL}/${id}`, {
+          method:"PUT",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify(agendamento)
+        });
+        if(!res.ok) throw new Error(await res.text());
+        alert("Agendamento atualizado!");
+        cancelarEdicao();
+        carregarAgendamentos();
+      } catch(e){alert("Erro ao atualizar: "+e);}
+    });
+
+
+    async function deletarAgendamento(id){
+      if(!confirm("Deseja excluir este agendamento?")) return;
+      try {
+        const res = await fetch(`${apiURL}/${id}`, {method:"DELETE"});
+        if(!res.ok) throw new Error("Erro ao excluir");
+        carregarAgendamentos();
+      } catch(e){alert("Erro ao excluir: "+e);}
+    }
+
+
+    carregarSelects();
+    carregarAgendamentos();
+  </script>
+</body>
+</html>
