@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil do Usuário - Hospital Vida</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      height: 100vh;
+      background-image:
+      linear-gradient(rgba(166, 175, 176, 0.413),rgba(0, 151, 167, 0.6)),
+      url("https://img.freepik.com/fotos-gratis/membros-dos-sindicatos-trabalhando-juntos_23-2150995038.jpg?semt=ais_hybrid&w=740&q=80");
+      background-size: cover;
+      align-items: center;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    header {
+      width: 100%;
+      padding: 10px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: rgba(255, 255, 255);
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.3);
+      z-index: 100;
+      transition: background 0.5s;
+    }
+
+    header.scrolled {
+      background: rgba(0, 151, 167, 0.9);
+    }
+
+    .logo {
+      height: 70px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .logo:hover {
+      transform: scale(1.1);
+    }
+
+    nav {
+      display: flex;
+      gap: 40px;
+    }
+
+    nav a {
+      color: #007c91;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 16px;
+      position: relative;
+      transition: color 0.3s;
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: #00e5ff;
+      transition: width 0.3s;
+    }
+
+    nav a:hover::after {
+      width: 100%;
+    }
+
+    nav a:hover {
+      color: #b2ebf2;
+    }
+
+    .perfil {
+      height: 55px;
+      border-radius: 50%;
+      border: 2px solid white;
+      cursor: pointer;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .perfil:hover {
+      transform: scale(1.1);
+      border-color: #00e5ff;
+    }
+
+    main {
+      margin-top: 140px;
+      background: white;
+      padding: 40px 50px;
+      border-radius: 16px;
+      box-shadow: 0px 4px 15px rgba(0, 188, 212, 0.3);
+      width: 400px;
+      text-align: center;
+    }
+
+    main h2 {
+      color: #007c91;
+      margin-bottom: 25px;
+    }
+
+    .info {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .info p {
+      font-size: 16px;
+      margin: 10px 0;
+      background: #e0f7fa;
+      padding: 10px;
+      border-radius: 6px;
+      color: #004d40;
+      box-shadow: 0px 2px 4px rgba(0, 188, 212, 0.2);
+    }
+
+    button {
+      width: 90%;
+      padding: 12px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .editar {
+      background: linear-gradient(to right, #00bcd4, #0097a7);
+      color: #fff;
+    }
+
+    .editar:hover {
+      background: linear-gradient(to right, #26c6da, #00acc1);
+    }
+
+    .sair {
+      background: #ff5252;
+      color: white;
+    }
+
+    .sair:hover {
+      background: #ff6f61;
+    }
+
+    footer {
+      margin-top: 60px;
+      padding: 15px;
+      background: #0097a7;
+      color: white;
+      width: 100%;
+      text-align: center;
+      font-size: 14px;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.2);
+    }
+
+  </style>
+</head>
+<body>
+  <header id="header">
+    <a href="/home"><img src="https://www.shareicon.net/download/2016/10/29/848387_medical_512x512.png" alt="Logo do Hospital" class="logo"></a>
+
+    <nav>
+      <a href="/home">Início</a>
+      <a href="/agendamentos">Agendar</a>
+      <a href="/sobre">Sobre Nós</a>
+      <a href="/contato">Contato</a>
+    </nav>
+
+    <a href="/perfil"><img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Perfil" class="perfil"></a>
+  </header>
+
+  <main>
+  <h2>Meu Perfil</h2>
+
+  <div class="info">
+    <p><strong>Nome:</strong> <span id="nome"></span></p>
+    <p><strong>CPF:</strong> <span id="cpf"></span></p>
+  </div>
+
+  <div id="editar-section" style="display:none;">
+    <h3>Editar Perfil</h3>
+    <form id="formEditar" style="color:#000">
+      <label>Nome:</label>
+      <input type="text" id="editNome" required><br><br>
+
+      <label>Senha atual:</label>
+      <input type="password" id="senhaAtual" required><br><br>
+
+      <label>Nova senha:</label>
+      <input type="password" id="novaSenha"><br><br>
+
+      <button type="submit" class="editar">Salvar Alterações</button>
+      <button type="button" onclick="cancelarEdicao()">Cancelar</button>
+    </form>
+  </div>
+
+  <button class="editar" id="btnEditar" onclick="mostrarEdicao()">Editar Perfil</button>
+  <button class="sair" onclick="logout()">Sair</button>
+</main>
+
+<script>
+  // Certificar que o usuário está logado em uma conta
+  const cliente = JSON.parse(localStorage.getItem("cliente"));
+  if (!cliente) {
+    alert('Você precisa estar logado para acessar essa página');
+    window.location.href = "/login";
+  }
+
+  // Pega as informações do formulário
+  const nomeSpan = document.getElementById("nome");
+  const cpfSpan = document.getElementById("cpf");
+  const editSection = document.getElementById("editar-section");
+  const btnEditar = document.getElementById("btnEditar");
+  const editNome = document.getElementById("editNome");
+  const senhaAtual = document.getElementById("senhaAtual");
+  const novaSenha = document.getElementById("novaSenha");
+
+  let senhaReal = ""; // guarda a senha atual do servidor
+
+  // Busca os dados do usuário logado na API
+  async function carregarPerfil() {
+    try {
+      const response = await fetch(`/api/clientes`);
+      const data = await response.json();
+      const user = data.find(u => u.CPF === cliente.CPF);
+      // Verifica se o usuário foi encontrado no banco de dados
+      if (user) {
+        nomeSpan.textContent = user.nome;
+        cpfSpan.textContent = user.CPF;
+        editNome.value = user.nome;
+        senhaReal = user.senha; // armazenamos a senha atual
+      } else {
+        alert('Usuário não encontrado.');
+        logout();
+      }
+    } catch (err) {
+      console.error("Erro ao carregar perfil:", err);
+    }
+  }
+
+  function mostrarEdicao() {
+    editSection.style.display = "block";
+    btnEditar.style.display = "none";
+  }
+
+  function cancelarEdicao() {
+    editSection.style.display = "none";
+    btnEditar.style.display = "inline-block";
+  }
+
+  // Função de atualização
+  document.getElementById("formEditar").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const senhaAntiga = senhaAtual.value;
+    const nova = novaSenha.value;
+
+    // Verifica a senha antiga no frontend
+    if (senhaAntiga !== senhaReal) {
+      alert("Senha atual incorreta!");
+      return;
+    }
+
+    // Monta o corpo da requisição
+    const body = { nome: editNome.value };
+    if (nova) body.senha = nova; else body.senha = senhaReal; // mantém a mesma senha
+
+    // Envia atualização para o back usando put
+    const atualizar = await fetch(`/api/clientes/${cliente.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+
+    // Ultima verificação para confirmar a atualização
+    if (atualizar.ok) {
+      alert("Perfil atualizado com sucesso!");
+      senhaReal = nova || senhaReal; // atualiza a senha armazenada
+      localStorage.setItem("cliente", JSON.stringify({ ...cliente, nome: editNome.value }));
+      cancelarEdicao();
+      carregarPerfil();
+    } else {
+      alert("Erro ao atualizar perfil.");
+    }
+  });
+
+  // Sair da sessão atual
+  function logout() {
+    localStorage.removeItem("cliente");
+    window.location.href = "/login";
+  }
+
+  // recarregar e mostrar a atualização
+  carregarPerfil();
+</script>
+
+
+</body>
+</html>

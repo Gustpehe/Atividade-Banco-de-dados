@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sobre Nós - Hospital São Gustavo</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(to bottom, #e0f7fa, #ffffff);
+      color: #004d40;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    header {
+      width: 100%;
+      padding: 10px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: rgba(255, 255, 255);
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.3);
+      z-index: 100;
+      transition: background 0.5s;
+    }
+
+    header.scrolled {
+      background: rgba(0, 151, 167, 0.9);
+    }
+
+    .logo {
+      height: 70px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .logo:hover {
+      transform: scale(1.1);
+    }
+
+    nav {
+      display: flex;
+      gap: 40px;
+    }
+
+    nav a {
+      color: #007c91;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 16px;
+      position: relative;
+      transition: color 0.3s;
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: #00e5ff;
+      transition: width 0.3s;
+    }
+
+    nav a:hover::after {
+      width: 100%;
+    }
+
+    nav a:hover {
+      color: #b2ebf2;
+    }
+
+    .perfil {
+      height: 55px;
+      border-radius: 50%;
+      border: 2px solid white;
+      cursor: pointer;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .perfil:hover {
+      transform: scale(1.1);
+      border-color: #00e5ff;
+    }
+
+    .hero {
+      width: 100%;
+      height: 300px;
+      background: linear-gradient(rgba(0, 151, 167, 0.7), rgba(0, 188, 212, 0.6)),
+        url('https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1500&q=80');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 90px;
+      color: white;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 36px;
+      font-weight: 700;
+    }
+
+    main {
+      max-width: 1000px;
+      background: white;
+      padding: 50px 60px;
+      margin-top: 40px;
+      margin-bottom: 40px;
+      border-radius: 16px;
+      box-shadow: 0px 4px 15px rgba(0, 188, 212, 0.3);
+    }
+
+    main h2 {
+      color: #007c91;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #00bcd4;
+      display: inline-block;
+      padding-bottom: 5px;
+    }
+
+    main p {
+      font-size: 16px;
+      line-height: 1.7;
+      margin-bottom: 25px;
+      text-align: justify;
+    }
+
+    footer {
+      margin-top: 60px;
+      padding: 15px;
+      background: #0097a7;
+      color: white;
+      width: 100%;
+      text-align: center;
+      font-size: 14px;
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+
+<body>
+    <header id="header">
+    <a href="/home"><img src="https://www.shareicon.net/download/2016/10/29/848387_medical_512x512.png" alt="Logo do Hospital" class="logo"></a>
+
+    <nav>
+      <a href="/home">Início</a>
+      <a href="/agendamentos">Agendar</a>
+      <a href="/sobre">Sobre Nós</a>
+      <a href="/contato">Contato</a>
+    </nav>
+
+    <a href="/perfil"><img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Perfil" class="perfil"></a>
+  </header>
+
+  <section class="hero">
+    <h1>Sobre o Hospital São Gustavo</h1>
+  </section>
+
+  <main>
+    <h2>Nossa História</h2>
+    <p>
+     O Hospital São Gustavo foi fundado há mais de 20 anos com o sonho de oferecer um atendimento de saúde de qualidade para todos. No começo, éramos uma pequena clínica, mas com o tempo fomos crescendo, conquistando a confiança das pessoas e nos tornando um dos hospitais mais respeitados da região. Hoje temos orgulho de combinar tecnologia moderna com o cuidado humano, porque acreditamos que saúde é mais do que tratamento: é acolhimento, escuta e empatia.
+    </p>
+
+    <h2>Missão</h2>
+    <p>
+        Nossa missão é cuidar das pessoas com respeito, dedicação e carinho. Queremos garantir que cada paciente se sinta seguro e bem tratado, desde a recepção até o momento da alta. Buscamos oferecer serviços médicos de qualidade, com profissionais capacitados e equipamentos modernos, mas sem esquecer o lado humano que faz toda a diferença.
+    </p>
+
+    <h2>Visão</h2>
+    <p>
+        Ser reconhecido como um hospital que realmente faz a diferença na vida das pessoas. Queremos crescer, investir em tecnologia e capacitação, e continuar sendo um lugar onde todos possam encontrar atendimento acessível, ágil e de confiança. Nosso objetivo é ser referência em saúde e bem-estar na nossa cidade e além dela.
+    </p>
+
+    <h2>Valores</h2>
+    <p>
+        Empatia: tratar cada paciente como gostaríamos de ser tratados. Ética: agir com transparência e responsabilidade em todas as situações. Respeito: valorizar as diferenças e ouvir com atenção. Inovação: buscar sempre novas formas de melhorar o atendimento. Trabalho em equipe: unir forças para cuidar melhor das pessoas. Humanização: lembrar que por trás de cada diagnóstico existe uma história e uma vida.
+    </p>
+
+    <h2>Nossa Equipe</h2>
+    <p>
+        Nosso hospital conta com médicos, enfermeiros e técnicos que amam o que fazem. Cada profissional tem um papel essencial no cuidado dos pacientes, e todos trabalham juntos com o mesmo propósito: oferecer o melhor atendimento possível. Além da parte técnica, nossa equipe se destaca pelo carinho e pela atenção que dedica a cada pessoa — porque aqui, o cuidado começa com o coração.
+    </p>
+  </main>
+
+  <footer>
+    © 2025 Casa de Saúde São Gustavo — Todos os direitos reservados.
+  </footer>
+  <script>
+  // Certificar que o usuário está logado em uma conta
+    const cliente = JSON.parse(localStorage.getItem("cliente"));
+    if (!cliente) {
+      window.location.href = "/login"; // Redireciona quem não está logado
+      alert('Você precisa estar logado para acessar essa página');
+    }
+  </script>
+</body>
+</html>

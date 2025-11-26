@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Yvone Filmes</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Arial", sans-serif;
+      background-image: linear-gradient(to right, rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://nexxto.com/wp-content/uploads/2021/05/fast-track.jpg');
+      background-repeat: repeat;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #004d40;
+    }
+
+    header {
+      background: linear-gradient(to right, #00bcd4, #0097a7);
+      color: white;
+      padding: 15px;
+      display: flex;
+      width: 100%;
+      position: relative;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+    }
+
+    header img {
+      height: 80px;
+      cursor: pointer;
+      left: 20px;
+    }
+
+    .login-box {
+      margin-top: 100px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 15px rgba(0, 188, 212, 0.3);
+      width: 320px;
+      text-align: center;
+      color: #006064;
+    }
+
+    .login-box h2 {
+      margin-bottom: 20px;
+      color: #007c91;
+    }
+
+    .login-box input {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #b2ebf2;
+      border-radius: 6px;
+      background: #e0f7fa;
+      color: #004d40;
+      transition: 0.3s;
+    }
+
+    .login-box input:focus {
+      outline: none;
+      border-color: #00bcd4;
+      background: #ffffff;
+    }
+
+    .login-box input::placeholder {
+      color: #80deea;
+    }
+
+    .login-box button {
+      width: 95%;
+      padding: 12px;
+      margin-top: 15px;
+      background: linear-gradient(to right, #00bcd4, #0097a7);
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .login-box button:hover {
+      background: linear-gradient(to right, #26c6da, #00acc1);
+    }
+
+    .login-box p {
+      margin-top: 15px;
+      color: #007c91;
+    }
+
+    .login-box a {
+      color: #00bcd4;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .login-box a:hover {
+      text-decoration: underline;
+    }
+
+    .cadastro-btn {
+      border: 1px solid rgba(255,255,255,0.25);
+      color: #e0f7fa;
+    }
+  </style>
+
+
+</head>
+<body>
+  <header>
+    <a href="login.html"><img src="" alt=""></a>
+  </header>
+  <div class="login-box">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="text" id="CPF" placeholder="CPF" required>
+      <input type="password" id="senha" placeholder="Senha" required>
+      <button type="submit">Entrar</button>
+    </form>
+    <p>Não possui conta? <a href="/cadastro">Faça o cadastro aqui</a></p>
+    <p id="msg"></p>
+  </div>
+
+  <script>
+    const form = document.getElementById("loginForm");
+    const msg = document.getElementById("msg");
+
+    // faz o login
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const dados = {
+        CPF: document.getElementById("CPF").value.trim(),
+        senha: document.getElementById("senha").value.trim()
+      };
+
+      msg.textContent = "";
+
+      try {
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(dados)
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          msg.textContent = data.message;
+          msg.className = "success";
+
+          // Armazena informações básicas do cliente no navegador
+          localStorage.setItem("cliente", JSON.stringify(data.cliente));
+
+          // Redireciona para a página principal após 1000 milisegundos
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 1000);
+        } else {
+          msg.textContent = data.error || "Falha no login.";
+          msg.className = "error";
+        }
+      } catch (err) {
+        console.error(err);
+        msg.textContent = "Erro de conexão com o servidor.";
+        msg.className = "error";
+      }
+    });
+  </script>
+</body>
+</html>
